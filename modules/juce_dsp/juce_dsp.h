@@ -32,7 +32,6 @@
   ==============================================================================
 */
 
-
 /*******************************************************************************
  The block below describes the properties of this module, and is read by
  the Projucer to automatically generate project code that uses it.
@@ -59,7 +58,6 @@
 
 *******************************************************************************/
 
-
 #pragma once
 
 #define JUCE_DSP_H_INCLUDED
@@ -68,53 +66,52 @@
 
 #if JUCE_INTEL
 
- #if defined (_M_X64) || defined (__amd64__)
-  #ifndef __SSE2__
-   #define __SSE2__
-  #endif
- #endif
+#if defined(_M_X64) || defined(__amd64__)
+#ifndef __SSE2__
+#define __SSE2__
+#endif
+#endif
 
- #ifndef JUCE_USE_SIMD
-  #define JUCE_USE_SIMD 1
- #endif
+#ifndef JUCE_USE_SIMD
+#define JUCE_USE_SIMD 1
+#endif
 
- #if JUCE_USE_SIMD
-  #include <immintrin.h>
- #endif
+#if JUCE_USE_SIMD
+#include <immintrin.h>
+#endif
 
 #elif JUCE_ARM
 
- #ifndef JUCE_USE_SIMD
-  #define JUCE_USE_SIMD 1
- #endif
+#ifndef JUCE_USE_SIMD
+#define JUCE_USE_SIMD 1
+#endif
 
- #if JUCE_64BIT && JUCE_WINDOWS
-  #include <arm64_neon.h>
- #else
-  #include <arm_neon.h>
- #endif
+#if JUCE_64BIT && JUCE_WINDOWS
+#include <arm64_neon.h>
+#else
+#include <arm_neon.h>
+#endif
 
 #else
 
- // No SIMD Support
- #ifndef JUCE_USE_SIMD
-  #define JUCE_USE_SIMD 0
- #endif
+// No SIMD Support
+#ifndef JUCE_USE_SIMD
+#define JUCE_USE_SIMD 0
+#endif
 
 #endif
 
 #ifndef JUCE_VECTOR_CALLTYPE
- // __vectorcall does not work on 64-bit due to internal compiler error in
- // release mode VS2017. Re-enable when Microsoft fixes this
- #if _MSC_VER && JUCE_USE_SIMD && ! (defined (_M_X64) || defined (__amd64__))
-  #define JUCE_VECTOR_CALLTYPE __vectorcall
- #else
-  #define JUCE_VECTOR_CALLTYPE
- #endif
+// __vectorcall does not work on 64-bit due to internal compiler error in
+// release mode VS2017. Re-enable when Microsoft fixes this
+#if _MSC_VER && JUCE_USE_SIMD && !(defined(_M_X64) || defined(__amd64__))
+#define JUCE_VECTOR_CALLTYPE __vectorcall
+#else
+#define JUCE_VECTOR_CALLTYPE
+#endif
 #endif
 
 #include <complex>
-
 
 //==============================================================================
 /** Config: JUCE_ASSERTION_FIRFILTER
@@ -127,7 +124,7 @@
     a filter in the time domain.
 */
 #ifndef JUCE_ASSERTION_FIRFILTER
- #define JUCE_ASSERTION_FIRFILTER 1
+#define JUCE_ASSERTION_FIRFILTER 1
 #endif
 
 /** Config: JUCE_DSP_USE_INTEL_MKL
@@ -142,7 +139,7 @@
     paths, and you must link against all the necessary MKL libraries.
 */
 #ifndef JUCE_DSP_USE_INTEL_MKL
- #define JUCE_DSP_USE_INTEL_MKL 0
+#define JUCE_DSP_USE_INTEL_MKL 0
 #endif
 
 /** Config: JUCE_DSP_USE_SHARED_FFTW
@@ -157,8 +154,8 @@
 
     You must respect the FFTW license when enabling this option.
 */
- #ifndef JUCE_DSP_USE_SHARED_FFTW
- #define JUCE_DSP_USE_SHARED_FFTW 0
+#ifndef JUCE_DSP_USE_SHARED_FFTW
+#define JUCE_DSP_USE_SHARED_FFTW 0
 #endif
 
 /** Config: JUCE_DSP_USE_STATIC_FFTW
@@ -173,7 +170,7 @@
     You must respect the FFTW license when enabling this option.
 */
 #ifndef JUCE_DSP_USE_STATIC_FFTW
- #define JUCE_DSP_USE_STATIC_FFTW 0
+#define JUCE_DSP_USE_STATIC_FFTW 0
 #endif
 
 /** Config: JUCE_DSP_ENABLE_SNAP_TO_ZERO
@@ -189,66 +186,65 @@
     filters and algorithms.
 */
 #ifndef JUCE_DSP_ENABLE_SNAP_TO_ZERO
- #define JUCE_DSP_ENABLE_SNAP_TO_ZERO 1
+#define JUCE_DSP_ENABLE_SNAP_TO_ZERO 1
 #endif
 
-
 //==============================================================================
-#undef Complex  // apparently some C libraries actually define these symbols (!)
+#undef Complex // apparently some C libraries actually define these symbols (!)
 #undef Factor
 #undef check
 
 namespace juce::dsp
 {
 
-template <typename Type>
-using Complex = std::complex<Type>;
+    template <typename Type>
+    using Complex = std::complex<Type>;
 
-template <size_t len, typename T>
-using FixedSizeFunction = juce::FixedSizeFunction<len, T>;
+    template <size_t len, typename T>
+    using FixedSizeFunction = juce::FixedSizeFunction<len, T>;
 
-//==============================================================================
-namespace util
-{
-    /** Use this function to prevent denormals on intel CPUs.
-        This function will work with both primitives and simple containers.
-    */
-  #if JUCE_DSP_ENABLE_SNAP_TO_ZERO
-    inline void snapToZero (float&       x) noexcept            { JUCE_SNAP_TO_ZERO (x); }
-   #ifndef DOXYGEN
-    inline void snapToZero (double&      x) noexcept            { JUCE_SNAP_TO_ZERO (x); }
-    inline void snapToZero (long double& x) noexcept            { JUCE_SNAP_TO_ZERO (x); }
-   #endif
-  #else
-    inline void snapToZero ([[maybe_unused]] float&       x) noexcept            {}
-   #ifndef DOXYGEN
-    inline void snapToZero ([[maybe_unused]] double&      x) noexcept            {}
-    inline void snapToZero ([[maybe_unused]] long double& x) noexcept            {}
-   #endif
-  #endif
-}
+    //==============================================================================
+    namespace util
+    {
+        /** Use this function to prevent denormals on intel CPUs.
+            This function will work with both primitives and simple containers.
+        */
+#if JUCE_DSP_ENABLE_SNAP_TO_ZERO
+        inline void snapToZero(float &x) noexcept { JUCE_SNAP_TO_ZERO(x); }
+#ifndef DOXYGEN
+        inline void snapToZero(double &x) noexcept { JUCE_SNAP_TO_ZERO(x); }
+        inline void snapToZero(long double &x) noexcept { JUCE_SNAP_TO_ZERO(x); }
+#endif
+#else
+        inline void snapToZero([[maybe_unused]] float &x) noexcept {}
+#ifndef DOXYGEN
+        inline void snapToZero([[maybe_unused]] double &x) noexcept {}
+        inline void snapToZero([[maybe_unused]] long double &x) noexcept {}
+#endif
+#endif
+    }
 
 }
 
 //==============================================================================
 #if JUCE_USE_SIMD
- #include "native/juce_SIMDNativeOps_fallback.h"
+#include "native/juce_SIMDNativeOps_fallback.h"
 
- // include the correct native file for this build target CPU
- #if JUCE_INTEL
-  #ifdef __AVX2__
-   #include "native/juce_SIMDNativeOps_avx.h"
-  #else
-   #include "native/juce_SIMDNativeOps_sse.h"
-  #endif
- #elif JUCE_ARM
-  #include "native/juce_SIMDNativeOps_neon.h"
- #else
-  #error "SIMD register support not implemented for this platform"
- #endif
+// include the correct native file for this build target CPU
+#if JUCE_INTEL
+#ifdef __AVX2__
+#include "native/juce_SIMDNativeOps_avx.h"
+#else
+#include "native/juce_SIMDNativeOps_sse.h"
+#endif
+#elif JUCE_ARM
+#include "native/juce_SIMDNativeOps_neon.h"
+#else
+#error "SIMD register support not implemented for this platform"
+#endif
 
- #include "containers/juce_SIMDRegister.h"
- #include "containers/juce_SIMDRegister_Impl.h"
+#include "containers/juce_SIMDRegister.h"
+#include "containers/juce_SIMDRegister_Impl.h"
 #endif
 
 #include "maths/juce_SpecialFunctions.h"
